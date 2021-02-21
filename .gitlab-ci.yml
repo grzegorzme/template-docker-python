@@ -1,0 +1,37 @@
+stages:
+  - build
+  - test
+  - deploy
+
+default:
+  image: python:3.8
+
+build-env:
+  stage: build
+  script:
+    - make env-dev
+  artifacts:
+    paths:
+      - .venv
+
+.tests:
+  stage: test
+  dependencies:
+    - venv-build
+  needs:
+    - venv-build
+
+test-unit:
+  extends: .tests
+  script:
+    - make test
+
+test-style:
+  extends: .tests
+  script:
+    - make format-check
+
+test-lint:
+  extends: .tests
+  script:
+    - make lint
